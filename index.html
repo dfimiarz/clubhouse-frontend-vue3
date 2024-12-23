@@ -2,7 +2,8 @@
 <html lang="">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"
@@ -10,24 +11,88 @@
     />
     <title>Clubhouse</title>
     <style>
-      #loading {
+      #loader {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         background-color: white;
+        color: black;
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 24px;
-        font-family: Roboto, Arial;
+        flex-direction: column;
+        font-size: 48px;
+        font-family: 'Brush Script MT', cursive;
+        color: black;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #loader {
+          background-color: black;
+          color: white;
+        }
+      }
+
+      @media (prefers-color-scheme: light) {
+        #loader {
+          background-color: white;
+          color: black;
+        }
+      }
+
+      .fade {
+        transition: opacity 0.5s ease-in-out;
+        --webkit-transition: opacity 1s ease-in-out;
+        --moz-transition: opacity 1s ease-in-out;
+        --o-transition: opacity 1s ease-in-out;
+      }
+
+      #app.show {
+        opacity: 1;
+      }
+
+      #loader.hide {
+        opacity: 0;
+      }
+
+      .text_container {
+        margin-bottom: 10px;
+      }
+
+      .spinner_img_container {
+        margin-top: 24px;
       }
     </style>
   </head>
   <body style="margin: 0px">
-    <div id="app"></div>
-    <div id="loading">Loading...</div>
+    <div id="app" class="hide"></div>
+    <div id="loader" class="fade show">
+      <div class="text_container">
+        <p>Clubhouse</p>
+      </div>
+      <div class="logo_img_container">
+        <img
+          class="logoimg"
+          src="logo.png"
+          alt="Clubhouse"
+          width="150px"
+          height="150px"
+          width="100%"
+        />
+      </div>
+      <div class="spinner_img_container">
+        <img
+          class="spinnerimg"
+          src="spinning-dots.svg"
+          alt="Loading..."
+          width="50px"
+          height="50px"
+          width="100%"
+        />
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

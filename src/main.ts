@@ -1,4 +1,4 @@
-import './assets/main.css'
+//import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -17,9 +17,15 @@ dayjs.extend(localizedFormat)
 
 const app = createApp(App)
 
+const pinia = createPinia()
+
 app.config.globalProperties.$dayjs = dayjs
 
-app.use(createPinia())
 app.use(router)
+app.use(pinia)
 
-app.mount('#app')
+setTimeout(loadApp, 2000)
+
+function loadApp() {
+  app.mount('#app')
+}
