@@ -11,6 +11,9 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 
+import { useOptionsStore } from './stores/options'
+import { checkConnection } from './services/apiconnector'
+
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(localizedFormat)
@@ -24,8 +27,15 @@ app.config.globalProperties.$dayjs = dayjs
 app.use(router)
 app.use(pinia)
 
-setTimeout(loadApp, 2000)
+const optionsStore = useOptionsStore()
 
-function loadApp() {
-  app.mount('#app')
-}
+checkConnection()
+  .then(() => {
+    optionsStore.connected = true
+  })
+  .catch(() => {
+    optionsStore.connected = false
+  })
+  .finally(() => {
+    app.mount('#app')
+  })

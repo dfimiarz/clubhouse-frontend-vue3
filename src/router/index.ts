@@ -20,4 +20,13 @@ const router = createRouter({
   ],
 })
 
+router.beforeEach((to, from, next) => {
+  console.log('Router running')
+
+  if (to.name === 'home') {
+    console.log('Home route')
+  }
+  next()
+})
+
 export default router
