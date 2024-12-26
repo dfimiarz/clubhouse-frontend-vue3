@@ -55,17 +55,24 @@ const settingsStore = useSettingsStore()
 const loader = document.getElementById('loader')
 const appElement = document.getElementById('app')
 
-loader?.addEventListener('transitionend', handleLoaderTransition)
-
+/**
+ * Handle the transitionend event on the loader element
+ */
 function handleLoaderTransition() {
+  // Remove the loader element after the transition ends
   loader?.remove()
   showApp()
 }
 
+/**
+ * Show the app element
+ */
 function showApp() {
   appElement?.classList.replace('hide', 'show')
   app.mount('#app')
 }
+
+loader?.addEventListener('transitionend', handleLoaderTransition)
 
 checkConnection()
   .then(() => {
@@ -75,5 +82,6 @@ checkConnection()
     settingsStore.connected = false
   })
   .finally(() => {
+    // Loading is done, hide the splash screen
     loader?.classList.replace('show', 'hide')
   })
