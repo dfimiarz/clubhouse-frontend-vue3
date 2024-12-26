@@ -52,6 +52,21 @@ app.use(vuetify)
 
 const settingsStore = useSettingsStore()
 
+const loader = document.getElementById('loader')
+const appElement = document.getElementById('app')
+
+loader?.addEventListener('transitionend', handleLoaderTransition)
+
+function handleLoaderTransition() {
+  loader?.remove()
+  showApp()
+}
+
+function showApp() {
+  appElement?.classList.replace('hide', 'show')
+  app.mount('#app')
+}
+
 checkConnection()
   .then(() => {
     settingsStore.connected = true
@@ -60,5 +75,5 @@ checkConnection()
     settingsStore.connected = false
   })
   .finally(() => {
-    app.mount('#app')
+    loader?.classList.replace('show', 'hide')
   })

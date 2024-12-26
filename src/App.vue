@@ -43,17 +43,6 @@ function handleVisibilityChange() {
   }
 }
 
-function showApp() {
-  //Hide the loader and show the app
-  const loader = document.getElementById('loader')
-  const appElement = document.getElementById('app')
-  if (loader && appElement) {
-    //Swap classes from show to hide
-    loader.classList.replace('show', 'hide')
-    appElement.classList.replace('hide', 'show')
-  }
-}
-
 function setupAppWatcher() {
   //console.log('Setting up app watcher')
   document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -82,7 +71,7 @@ function checkConnection(): void {
       //console.log('Connection check successful')
       settingsStore.connected = true
     })
-    .catch((err) => {
+    .catch(() => {
       //console.error('Connection check failed', err)
       settingsStore.connected = false
     })
@@ -92,7 +81,7 @@ function checkConnection(): void {
 }
 
 onMounted(() => {
-  showApp()
+  console.log('App mounted in side component')
 })
 
 onBeforeMount(() => {
