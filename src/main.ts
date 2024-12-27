@@ -18,8 +18,12 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 
-import { useSettingsStore } from './stores/settings'
-import { checkConnection } from './services/apiconnector'
+//import { useSettingsStore } from './stores/settings'
+import { useUserStore } from './stores/user'
+//import { checkConnection } from './services/apiconnector'
+
+import auth from './firebase'
+import { onAuthStateChanged } from 'firebase/auth'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -50,10 +54,27 @@ app.use(router)
 app.use(pinia)
 app.use(vuetify)
 
-const settingsStore = useSettingsStore()
+//const settingsStore = useSettingsStore()
+const userStore = useUserStore()
+
+//Subscribe to the auth store to know when the auth is initialized
+const unsub = userStore.$subscribe((_mutation, state) => {
+  //call startApp when the auth is initialized
+  console.log('Subscribed to userStore', state.isAuthInitialized)
+  if (state.isAuthInitialized) {
+    startApp()
+    unsub()
+  }
+})
 
 const loader = document.getElementById('loader')
 loader?.addEventListener('transitionend', handleLoaderFadoutTransition)
+
+function startApp() {
+  //Start transition to fadeout the loader
+  console.log('startApp')
+  loader?.classList.add('fadeout')
+}
 
 function handleLoaderFadoutTransition() {
   loader?.remove()
@@ -63,14 +84,9 @@ function handleLoaderFadoutTransition() {
   app.mount(appContainer)
 }
 
-checkConnection()
-  .then(() => {
-    settingsStore.connected = true
+onAuthStateChanged(auth, (user) => {
+  userStore.$patch({
+    user: user?.email || null,
+    isAuthInitialized: true,
   })
-  .catch(() => {
-    settingsStore.connected = false
-  })
-  .finally(() => {
-    // Loading is done, hide the splash screen
-    loader?.classList.add('hide')
-  })
+})
