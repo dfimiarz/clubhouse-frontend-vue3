@@ -59,7 +59,6 @@ function handleLoaderFadoutTransition() {
   loader?.remove()
   //Add a div element to the body to mount the app
   const appContainer = document.createElement('div')
-  appContainer.id = 'app'
   document.body.insertBefore(appContainer, document.body.firstChild)
   app.mount(appContainer)
 }
