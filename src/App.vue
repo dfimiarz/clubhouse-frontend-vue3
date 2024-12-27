@@ -1,21 +1,23 @@
 <template>
-  <v-app>
-    <v-app-bar app>
-      <v-app-bar-nav-icon @click="showDrawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Knickerbocker Field Club</v-toolbar-title>
-    </v-app-bar>
-    <v-navigation-drawer v-model="drawer" temporary> Test </v-navigation-drawer>
+  <transition name="fade" mode="out-in">
+    <v-app v-show="showApp">
+      <v-app-bar app>
+        <v-app-bar-nav-icon @click="showDrawer"></v-app-bar-nav-icon>
+        <v-toolbar-title>Knickerbocker Field Club</v-toolbar-title>
+      </v-app-bar>
+      <v-navigation-drawer v-model="drawer" temporary> Test </v-navigation-drawer>
 
-    <v-main>
-      <v-container>
-        <v-row>
-          <v-col cols="12">
-            <router-view />
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+      <v-main>
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <router-view />
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-main>
+    </v-app>
+  </transition>
 </template>
 
 <script setup lang="ts">
@@ -27,6 +29,7 @@ let connCheckerHandle: number = 0
 
 const connChecking = ref(false)
 const drawer = ref(false)
+const showApp = ref(false)
 
 const settingsStore = useSettingsStore()
 
@@ -82,6 +85,7 @@ function checkConnection(): void {
 
 onMounted(() => {
   console.log('App mounted in side component')
+  showApp.value = true
 })
 
 onBeforeMount(() => {
@@ -102,4 +106,14 @@ watchEffect(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

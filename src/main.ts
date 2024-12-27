@@ -53,26 +53,16 @@ app.use(vuetify)
 const settingsStore = useSettingsStore()
 
 const loader = document.getElementById('loader')
-const appElement = document.getElementById('app')
+loader?.addEventListener('transitionend', handleLoaderFadoutTransition)
 
-/**
- * Handle the transitionend event on the loader element
- */
-function handleLoaderTransition() {
-  // Remove the loader element after the transition ends
+function handleLoaderFadoutTransition() {
   loader?.remove()
-  showApp()
+  //Add a div element to the body to mount the app
+  const appContainer = document.createElement('div')
+  appContainer.id = 'app'
+  document.body.insertBefore(appContainer, document.body.firstChild)
+  app.mount(appContainer)
 }
-
-/**
- * Show the app element
- */
-function showApp() {
-  appElement?.classList.replace('hide', 'show')
-  app.mount('#app')
-}
-
-loader?.addEventListener('transitionend', handleLoaderTransition)
 
 checkConnection()
   .then(() => {
@@ -83,5 +73,5 @@ checkConnection()
   })
   .finally(() => {
     // Loading is done, hide the splash screen
-    loader?.classList.replace('show', 'hide')
+    loader?.classList.add('hide')
   })
