@@ -88,12 +88,12 @@ function handleLoaderFadoutTransition() {
   app.mount(appContainer)
 }
 
-// onAuthStateChanged(auth, (user) => {
-//   userStore.$patch({
-//     user: user?.email || null,
-//     isAuthInitialized: true,
-//   })
-// })
+onAuthStateChanged(auth, (user) => {
+  userStore.$patch({
+    user: user?.email || null,
+    isAuthInitialized: true,
+  })
+})
 
 Promise.race([
   new Promise((_resolve, reject) => setTimeout(() => reject('Authentication time out'), 5000)),
