@@ -57,15 +57,19 @@ app.use(vuetify)
 //const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 
-//Subscribe to the auth store to know when the auth is initialized
-const unsub = userStore.$subscribe((_mutation, state) => {
-  //call startApp when the auth is initialized
-  console.log('Subscribed to userStore', state.isAuthInitialized)
-  if (state.isAuthInitialized) {
-    startApp()
-    unsub()
-  }
-})
+function waitForAuthInit(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const unsub = userStore.$subscribe((_, state) => {
+      console.log('waitForAuthInit', state.isAuthInitialized)
+      unsub()
+      if (state.isAuthInitialized) {
+        return resolve()
+      } else {
+        return reject('Faield to initialize authentification')
+      }
+    })
+  })
+}
 
 const loader = document.getElementById('loader')
 loader?.addEventListener('transitionend', handleLoaderFadoutTransition)
@@ -84,9 +88,21 @@ function handleLoaderFadoutTransition() {
   app.mount(appContainer)
 }
 
-onAuthStateChanged(auth, (user) => {
-  userStore.$patch({
-    user: user?.email || null,
-    isAuthInitialized: true,
+// onAuthStateChanged(auth, (user) => {
+//   userStore.$patch({
+//     user: user?.email || null,
+//     isAuthInitialized: true,
+//   })
+// })
+
+Promise.race([
+  new Promise((_resolve, reject) => setTimeout(() => reject('Authentication time out'), 5000)),
+  waitForAuthInit(),
+])
+  .then(() => {
+    console.log('Auth initialized')
+    startApp()
   })
-})
+  .catch((err) => {
+    console.error('Failed to initialize app', err)
+  })
