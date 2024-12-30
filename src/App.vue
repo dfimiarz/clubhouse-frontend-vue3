@@ -3,7 +3,7 @@
     <v-app v-show="showApp">
       <v-app-bar app>
         <v-app-bar-nav-icon @click="showDrawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>Knickerbocker Field Club</v-toolbar-title>
+        <v-toolbar-title>{{ settingsStore.clubInfo?.name }}</v-toolbar-title>
       </v-app-bar>
       <v-navigation-drawer v-model="drawer" temporary> Test </v-navigation-drawer>
 
