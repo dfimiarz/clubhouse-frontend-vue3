@@ -24,14 +24,20 @@
 import { onBeforeMount, onUnmounted, ref, onMounted, watchEffect } from 'vue'
 import { checkConnection as APIConnCheck } from '@/services/apiconnector'
 import { useSettingsStore } from './stores/settings'
+import { useUserStore } from './stores/user'
+import { onAuthStateChanged } from 'firebase/auth'
+import auth from '@/firebase'
+import type firebase from 'firebase/compat/app'
 
 let connCheckerHandle: number = 0
+let unsubAuthListener: firebase.Unsubscribe | null = null
 
 const connChecking = ref(false)
 const drawer = ref(false)
 const showApp = ref(false)
 
 const settingsStore = useSettingsStore()
+const userStore = useUserStore()
 
 function showDrawer() {
   console.log('Showing drawer')
@@ -39,6 +45,7 @@ function showDrawer() {
 }
 
 function handleVisibilityChange() {
+  console.debug('Visibility changed')
   if (document.hidden) {
     settingsStore.appActive = false
   } else {
@@ -58,12 +65,24 @@ function setupConnectionWatcher() {
   }, 5000)
 }
 
+function setUpAuthListener() {
+  //console.log('Setting up auth listener')
+  unsubAuthListener = onAuthStateChanged(auth, (user) => {
+    console.log('Auth state changed', user)
+    userStore.$patch({
+      user: user ? user.email : null,
+    })
+  })
+}
+
 function clearConnectionWatcher() {
   //console.log('Clearing connection watcher')
   if (connCheckerHandle > 0) clearInterval(connCheckerHandle)
 }
 
 function checkConnection(): void {
+  console.debug('Checking connection')
+
   // If already checking, return
   if (connChecking.value) return
 
@@ -90,9 +109,13 @@ onMounted(() => {
 
 onBeforeMount(() => {
   setupAppWatcher()
+  setUpAuthListener()
 })
 
 onUnmounted(() => {
+  if (unsubAuthListener) {
+    unsubAuthListener()
+  }
   clearConnectionWatcher()
   document.removeEventListener('visibilitychange', handleVisibilityChange)
 })

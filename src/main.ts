@@ -18,12 +18,11 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 
-//import { useSettingsStore } from './stores/settings'
+import { useSettingsStore } from './stores/settings'
 import { useUserStore } from './stores/user'
-//import { checkConnection } from './services/apiconnector'
+import { getClubInfo } from './services/apiconnector'
 
 import auth from './firebase'
-import { onAuthStateChanged } from 'firebase/auth'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -54,22 +53,8 @@ app.use(router)
 app.use(pinia)
 app.use(vuetify)
 
-//const settingsStore = useSettingsStore()
+const settingsStore = useSettingsStore()
 const userStore = useUserStore()
-
-function waitForAuthInit(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const unsub = userStore.$subscribe((_, state) => {
-      console.log('waitForAuthInit', state.isAuthInitialized)
-      unsub()
-      if (state.isAuthInitialized) {
-        return resolve()
-      } else {
-        return reject('Faield to initialize authentification')
-      }
-    })
-  })
-}
 
 const loader = document.getElementById('loader')
 loader?.addEventListener('transitionend', handleLoaderFadoutTransition)
@@ -88,21 +73,44 @@ function handleLoaderFadoutTransition() {
   app.mount(appContainer)
 }
 
-onAuthStateChanged(auth, (user) => {
-  userStore.$patch({
-    user: user?.email || null,
-    isAuthInitialized: true,
-  })
-})
+// function loadClubInfo(): void{
+//   return
+// }
 
-Promise.race([
-  new Promise((_resolve, reject) => setTimeout(() => reject('Authentication time out'), 5000)),
-  waitForAuthInit(),
-])
+function setMessages(text: string, type: number): void {
+  const errorMessageElement = document.getElementById('message_txt')
+
+  //Remove all classes
+  errorMessageElement?.setAttribute('class', '')
+
+  //If type = 0 set class to message, else set class to error
+  if (type === 0) {
+    errorMessageElement?.classList.add('message_txt')
+  } else {
+    errorMessageElement?.classList.add('error_txt')
+  }
+
+  if (errorMessageElement) {
+    errorMessageElement.textContent = text
+  }
+}
+
+await auth
+  .authStateReady()
   .then(() => {
-    console.log('Auth initialized')
+    userStore.$patch({
+      user: auth.currentUser?.email || null,
+      isAuthInitialized: true,
+    })
+  })
+  .then(getClubInfo)
+  .then((clubInfo) => {
+    settingsStore.$patch({
+      clubInfo: clubInfo,
+    })
     startApp()
   })
   .catch((err) => {
-    console.error('Failed to initialize app', err)
+    //Set the spinner to display none
+    setMessages(err, 1)
   })

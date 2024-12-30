@@ -1,7 +1,7 @@
 import axios from 'axios'
 import auth from '@/firebase'
 
-import type { PassInfo, OverlapInfo } from '@/types'
+import type { PassInfo, OverlapInfo, ClubInfo } from '@/types'
 import { z } from 'zod'
 
 const instance = axios.create({
@@ -260,12 +260,38 @@ export async function getClubSchedule() {
   return result.data
 }
 
-export async function getClubInfo() {
+export async function getClubInfo(): Promise<ClubInfo> {
   const url = new URL(import.meta.env.VITE_APP_BACKEND + '/club')
 
   const result = await axios.get(url.toString())
 
-  return result.data
+  //Validate the response against the schema
+  const clubInfoSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    time_zone: z.string(),
+    default_cal_start: z.string().time(),
+    default_cal_end: z.string().time(),
+    default_cal_start_min: z.number().min(0).max(1439),
+    default_cal_end_min: z.number().min(1).max(1440),
+    images: z.array(
+      z.object({
+        name: z.string(),
+        src: z.string(),
+      }),
+    ),
+  })
+
+  const status = clubInfoSchema.safeParse(result.data)
+
+  //If the response is valid, return true
+  if (status.success) {
+    return result.data
+  } else {
+    console.error(status.error)
+    //If the response is not valid, throw an error
+    throw new Error('Invalid club information')
+  }
 }
 
 export async function runReport(name, from, to) {

@@ -23,16 +23,19 @@
         align-items: center;
         display: flex;
         flex-direction: column;
-        font-size: 48px;
         font-family: 'Roboto', sans-serif;
-        font-weight: 700;
-        line-height: 1.5;
         transition: opacity 0.5s ease-in-out;
+        line-height: 1.5;
+        font-weight: 700;
       }
 
       @media (prefers-color-scheme: dark) {
         #loader {
           background-color: black;
+          color: white;
+        }
+
+        .message_txt {
           color: white;
         }
       }
@@ -42,6 +45,14 @@
           background-color: white;
           color: black;
         }
+
+        .message_txt {
+          color: black;
+        }
+      }
+
+      .error_txt {
+        color: red;
       }
 
       #loader.fadeout {
@@ -50,10 +61,17 @@
 
       .text_container {
         margin-bottom: 20px;
+        font-size: 48px;
       }
 
-      .spinner_img_container {
+      #spinner_img_container {
+        margin-top: 12px;
+      }
+
+      #error_container {
+        display: none;
         margin-top: 24px;
+        color: red;
       }
     </style>
   </head>
@@ -62,7 +80,7 @@
       <div class="text_container">
         <span>Clubhouse</span>
       </div>
-      <div class="logo_img_container">
+      <div id="logo_img_container">
         <img
           class="logoimg"
           src="logo.png"
@@ -72,7 +90,7 @@
           width="100%"
         />
       </div>
-      <div class="spinner_img_container">
+      <div id="spinner_img_container">
         <img
           class="spinnerimg"
           src="spinning-dots.svg"
@@ -80,6 +98,9 @@
           width="50px"
           height="50px"
         />
+      </div>
+      <div id="message_container">
+        <span id="message_txt">Loading ...</span>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
