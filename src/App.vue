@@ -32,7 +32,7 @@ import type firebase from 'firebase/compat/app'
 let connCheckerHandle: number = 0
 let unsubAuthListener: firebase.Unsubscribe | null = null
 
-const connChecking = ref(false)
+let connChecking = false
 const drawer = ref(false)
 const showApp = ref(false)
 
@@ -84,10 +84,10 @@ function checkConnection(): void {
   console.debug('Checking connection')
 
   // If already checking, return
-  if (connChecking.value) return
+  if (connChecking) return
 
   //console.log('Checking connection')
-  connChecking.value = true
+  connChecking = true
   APIConnCheck()
     .then(() => {
       //console.log('Connection check successful')
@@ -98,7 +98,7 @@ function checkConnection(): void {
       settingsStore.connected = false
     })
     .finally(() => {
-      connChecking.value = false
+      connChecking = false
     })
 }
 
