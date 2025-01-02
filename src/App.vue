@@ -16,6 +16,13 @@
           </v-row>
         </v-container>
       </v-main>
+      <v-overlay
+        :model-value="settingsStore.isLoadingData"
+        class="align-center justify-center"
+        persistent
+      >
+        <v-progress-circular color="primary" size="64" indeterminate></v-progress-circular>
+      </v-overlay>
     </v-app>
   </transition>
 </template>
@@ -32,6 +39,7 @@ import type firebase from 'firebase/compat/app'
 let connCheckerHandle: number = 0
 let unsubAuthListener: firebase.Unsubscribe | null = null
 
+// Flag to prevent multiple connection checks
 let connChecking = false
 const drawer = ref(false)
 const showApp = ref(false)

@@ -7,6 +7,15 @@ export const useSettingsStore = defineStore('settings', () => {
   const connected = ref(true)
   const appActive = ref(true)
   const clubInfo = shallowRef<ClubInfo | null>(null)
+  const isLoadingData = ref(false)
 
-  return { connected, appActive, clubInfo }
+  /**
+   *
+   * @param isLoading Controls the laoder overlay
+   */
+  function setLoader(isLoading: boolean) {
+    isLoadingData.value = isLoading
+  }
+
+  return { connected, appActive, clubInfo, isLoadingData, setLoader }
 })
