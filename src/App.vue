@@ -15,6 +15,12 @@
             </v-col>
           </v-row>
         </v-container>
+        <v-snackbar v-model="settingsStore.snackbar.show" :color="settingsStore.snackbar.color">
+          {{ settingsStore.snackbar.text }}
+          <template v-slot:actions>
+            <v-btn variant="text" @click="settingsStore.snackbar.show = false"> Close </v-btn>
+          </template>
+        </v-snackbar>
       </v-main>
       <v-overlay
         :model-value="settingsStore.isLoadingData"
