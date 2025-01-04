@@ -15,10 +15,10 @@
             </v-col>
           </v-row>
         </v-container>
-        <v-snackbar v-model="settingsStore.snackbar.show" :color="settingsStore.snackbar.color">
-          {{ settingsStore.snackbar.text }}
+        <v-snackbar v-model="snackbar.show" :color="snackbar.color">
+          {{ snackbar.text }}
           <template v-slot:actions>
-            <v-btn variant="text" @click="settingsStore.snackbar.show = false"> Close </v-btn>
+            <v-btn variant="text" @click="hideSnackbar()"> Close </v-btn>
           </template>
         </v-snackbar>
       </v-main>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, onUnmounted, ref, onMounted, watchEffect } from 'vue'
+import { onBeforeMount, onUnmounted, ref, shallowRef, onMounted, watchEffect, provide } from 'vue'
 import { checkConnection as APIConnCheck } from '@/services/apiconnector'
 import { useSettingsStore } from './stores/settings'
 import { useUserStore } from './stores/user'
@@ -49,14 +49,25 @@ let unsubAuthListener: firebase.Unsubscribe | null = null
 let connChecking = false
 const drawer = ref(false)
 const showApp = ref(false)
+const snackbar = shallowRef({ show: false, text: 'Test', color: 'warning' })
 
 const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 
 function showDrawer() {
-  console.log('Showing drawer')
   drawer.value = true
 }
+
+function showSnackbar(text: string, color: string) {
+  snackbar.value = { show: true, text: text, color: color }
+}
+
+function hideSnackbar() {
+  snackbar.value = { show: false, text: '', color: '' }
+}
+
+provide('hideSnackbar', hideSnackbar)
+provide('showSnackbar', showSnackbar)
 
 function handleVisibilityChange() {
   console.debug('Visibility changed')
@@ -95,8 +106,6 @@ function clearConnectionWatcher() {
 }
 
 function checkConnection(): void {
-  console.debug('Checking connection')
-
   // If already checking, return
   if (connChecking) return
 
